@@ -268,7 +268,8 @@
             backdrop-filter: blur(15px);
             border: 3px solid rgba(80, 80, 80, 0.5);
             border-radius: 25px;
-            padding: 30px 20px;
+            /* 🛠️ إزالة الحشو العلوي والسفلي للسماح للاسم بالتموضع */
+            padding: 0 20px;
             text-align: center;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -277,6 +278,7 @@
             min-height: 205px; 
             display: flex;
             flex-direction: column;
+            /* 🛠️ توسيط الاسم في المنتصف */
             justify-content: center;
             position: relative;
             overflow: hidden;
@@ -464,24 +466,25 @@
             50% { transform: scale(1.1); }
         }
         
+        /* 🛠️ START: تعديل تصميم اسم اللاعب (العودة للمنتصف) */
         .player-name {
-            font-size: 1.3rem;
+            font-size: 1.4rem; /* ⬅️ تكبير الخط */
             font-weight: 800;
-            margin-bottom: 12px;
-            color: #ffffff; 
+            color: #ffffff;
             text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
             letter-spacing: 0.3px;
             line-height: 1.2;
-            position: relative; 
-            z-index: 3; 
-            background: rgba(0, 0, 0, 0.4); 
-            padding: 5px 10px;
-            border-radius: 5px;
+            position: relative; /* ⬅️ العودة إلى relative */
+            z-index: 3;
+            background: rgba(0, 0, 0, 0.6); /* ⬅️ خلفية أغمق للوضوح */
+            padding: 8px 15px; /* ⬅️ تعديل الحشو */
+            border-radius: 10px; /* ⬅️ زوايا دائرية */
             width: fit-content;
-            margin-left: auto;
-            margin-right: auto;
-            transition: opacity 0.4s ease-in-out; 
+            margin: 0 auto; /* ⬅️ توسيط أفقي */
+            transition: opacity 0.4s ease-in-out;
         }
+        /* 🛠️ END: تعديل تصميم اسم اللاعب */
+
         
         .player-box.opened.role-citizen .player-name,
         .player-box.opened.role-detective .player-name {
@@ -830,12 +833,13 @@
                 width: 100%; 
                 min-height: 180px;
                 height: 180px; 
-                padding: 20px 15px;
+                /* 🛠️ إزالة الحشو العلوي والسفلي للسماح للاسم بالتموضع */
+                padding: 0 15px;
             }
             
             .player-name {
-                font-size: 1.1rem;
-                margin-bottom: 8px;
+                font-size: 1.2rem; /* ⬅️ تكبير الخط */
+                padding: 6px 12px; /* ⬅️ تعديل الحشو */
             }
             
             .skull-icon {
@@ -942,14 +946,17 @@
                 height: auto; 
                 aspect-ratio: 375 / 205; 
                 min-height: unset; 
-                padding: 15px 10px;
+                /* 🛠️ إزالة الحشو العلوي والسفلي للسماح للاسم بالتموضع */
+                padding: 0 10px;
             }
             
+            /* 🛠️ تعديل اسم اللاعب (العودة للمنتصف) للجوال */
             .player-name {
-                font-size: 1.1rem; 
-                margin-bottom: 6px;
-                padding: 3px 8px; 
+                font-size: 1.3rem; /* ⬅️ تكبير الخط على الجوال أيضاً */
+                padding: 6px 12px; /* ⬅️ تعديل الحشو للجوال */
+                /* ⬅️ بقية الخصائص موروثة من الأساسي */
             }
+            /* --------------------------------- */
 
             .skull-icon {
                 font-size: 1.2rem;
@@ -1516,37 +1523,28 @@
             
             document.getElementById('roleModal').classList.add('hidden');
             
-            const playerCount = parseInt(document.getElementById('playerCount').value);
+            // 🛠️ START: [تجاهل الخانات الفارغة]
+            const playerCountInput = parseInt(document.getElementById('playerCount').value);
             players = [];
-            
-            for (let i = 1; i <= playerCount; i++) {
+
+            for (let i = 1; i <= playerCountInput; i++) {
                 const nameInput = document.getElementById(`player${i}`);
                 if (!nameInput) continue; 
                 const name = nameInput.value.trim();
-                if (!name) {
-                    showCustomAlert(`يرجى إدخال اسم اللاعب ${i}`);
-                    return;
+                if (name) { // ⬅️ هذا هو الشرط: أضف الاسم فقط إذا لم يكن فارغاً
+                    players.push(name);
                 }
-                players.push(name);
             }
 
-             // التأكد من أن عدد الأسماء يطابق العدد (لمعالجة التحميل)
-            if (players.length !== playerCount) {
-                 for (let i = players.length + 1; i <= playerCount; i++) {
-                     const nameInput = document.getElementById(`player${i}`);
-                     if (!nameInput) { // إذا لم تكن الحقول موجودة (بسبب التحميل)
-                         updatePlayerNameInputs(playerCount);
-                         showCustomAlert(`يرجى إدخال اسم اللاعب ${i}`);
-                         return;
-                     }
-                     const name = nameInput.value.trim();
-                      if (!name) {
-                        showCustomAlert(`يرجى إدخال اسم اللاعب ${i}`);
-                        return;
-                    }
-                    players.push(name);
-                 }
+            // 🛠️ تحديث: [تجاهل الخانات الفارغة]
+            // يجب أن يتطابق عدد اللاعبين الفعلي مع عدد الأسماء المدخلة
+            const actualPlayerCount = players.length; 
+            
+            if (actualPlayerCount < 4) { // ⬅️ التحقق من الحد الأدنى بناءً على الأسماء الفعلية
+                 showCustomAlert('الحد الأدنى لعدد اللاعبين (الذين تم إدخال أسمائهم) هو 4');
+                 return;
             }
+            // 🛠️ END: [تجاهل الخانات الفارغة]
             
             // التحقق من توزيع الأدوار
             const citizenCount = parseInt(document.getElementById('citizenCount').value);
@@ -1555,8 +1553,8 @@
             const detectiveCount = parseInt(document.getElementById('detectiveCount').value); 
             
             const totalRoles = citizenCount + mafiaCount + doctorCount + detectiveCount; 
-            if (totalRoles !== playerCount) {
-                showCustomAlert('مجموع الأدوار يجب أن يساوي عدد اللاعبين');
+            if (totalRoles !== actualPlayerCount) { // ⬅️ المقارنة بعدد اللاعبين الفعلي
+                showCustomAlert(`مجموع الأدوار (${totalRoles}) يجب أن يساوي عدد اللاعبين الفعلي (${actualPlayerCount})`);
                 return;
             }
             
